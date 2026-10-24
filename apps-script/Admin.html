@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #fbf3e2; --surface: #fff; --surface-2: #f4e8cf; --ink: #0a1730; --muted: #55678a; --line: #e7dcc3;
+  --brand: #0f3b2a; --brand-2: #f2b21b; --soft: #f4e8cf; --navy: #0f3b2a; --ok: #0f9d74; --danger: #d13b3b;
+  --font-d: "Kanit", "IBM Plex Sans Thai", sans-serif; --font: "IBM Plex Sans Thai", "Leelawadee UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--font); padding-bottom: env(safe-area-inset-bottom); }
+.ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+button { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+header { background: linear-gradient(160deg, #0b2e20, var(--navy) 60%, #18523a); color: #fff; padding: calc(14px + env(safe-area-inset-top)) 0 0; position: sticky; top: 0; z-index: 10; }
+.top { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; }
+.mark { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--brand-2); color: var(--navy); font: 700 17px var(--font-d); }
+.top b { font: 600 16px var(--font-d); display: block; line-height: 1.2; }
+.top small { font-size: 12px; opacity: .7; display: block; }
+.top .sp { flex: 1; }
+.top a, .top button.link { color: #fff; opacity: .85; font-size: 13px; text-decoration: none; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); padding: 6px 10px; border-radius: 9px; display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.top a .ico, .top .link .ico { width: 15px; height: 15px; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.tabs button { border: 0; background: transparent; color: rgba(255,255,255,.7); padding: 10px 4px 12px; font-size: 14.5px; cursor: pointer; border-bottom: 3px solid transparent; display: flex; gap: 6px; justify-content: center; align-items: center; }
+.tabs button[aria-selected="true"] { color: #fff; border-color: var(--brand-2); font-weight: 600; }
+.tabs .ico { width: 17px; height: 17px; }
+
+main { padding: 18px 0 120px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: grid; gap: 14px; margin-bottom: 14px; }
+h2 { font: 700 21px/1.3 var(--font-d); margin: 0; }
+.muted { color: var(--muted); font-size: 14px; margin: 0; }
+label.l { font-weight: 600; font-size: 14.5px; display: block; margin-bottom: 6px; }
+label.l small { font-weight: 400; color: var(--muted); }
+input[type=text], input[type=url], input[type=date], input[type=search], input[type=password], input:not([type]), select, textarea {
+  width: 100%; font: 16px var(--font); padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fffdf8; color: var(--ink); }
+textarea { min-height: 96px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: 3px solid color-mix(in srgb, var(--brand-2) 45%, transparent); border-color: var(--brand); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { border: 1px solid var(--line); background: #fffdf8; padding: 8px 13px; border-radius: 999px; font-size: 14.5px; cursor: pointer; }
+.chips button[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); font-weight: 600; }
+.chips.gold button[data-tone="gold"][aria-pressed="true"] { background: #c8960c; border-color: #c8960c; }
+.chips.gold button[data-tone="silver"][aria-pressed="true"] { background: #7b8794; border-color: #7b8794; }
+.chips.gold button[data-tone="bronze"][aria-pressed="true"] { background: #a5642c; border-color: #a5642c; }
+.photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.ph { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: var(--surface-2); display: grid; place-items: center; font-size: 12px; color: var(--muted); text-align: center; padding: 4px; }
+.ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ph .x { position: absolute; right: 4px; top: 4px; z-index: 1; width: 26px; height: 26px; border-radius: 50%; border: 0; background: rgba(0,0,0,.6); color: #fff; display: grid; place-items: center; }
+.ph .x .ico { width: 14px; height: 14px; }
+.ph .cov { position: absolute; left: 4px; bottom: 4px; z-index: 1; background: var(--brand); color: #fff; font-size: 11px; padding: 0 7px; border-radius: 6px; }
+.ph.add { border: 2px dashed #d9c48e; background: var(--soft); color: var(--brand); cursor: pointer; font-weight: 600; gap: 4px; }
+.ph.add .ico { width: 26px; height: 26px; }
+.ph .bar { position: absolute; left: 8px; right: 8px; bottom: 10px; height: 5px; border-radius: 5px; background: rgba(0,0,0,.12); overflow: hidden; }
+.ph .bar i { display: block; height: 100%; width: 40%; background: var(--brand); animation: load 1s infinite ease-in-out; }
+@keyframes load { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
+.switch { display: flex; align-items: center; gap: 12px; justify-content: space-between; padding: 4px 0; cursor: pointer; }
+.switch input { appearance: none; width: 46px; height: 28px; border-radius: 28px; background: #c9d5e8; position: relative; flex: none; transition: .2s; cursor: pointer; }
+.switch input::after { content: ""; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.switch input:checked { background: var(--brand); }
+.switch input:checked::after { left: 21px; }
+.switch span small { display: block; color: var(--muted); font-size: 13px; }
+details.more { border-top: 1px dashed var(--line); padding-top: 12px; }
+details.more summary { cursor: pointer; color: var(--brand); font-weight: 600; list-style: none; display: flex; gap: 6px; align-items: center; }
+details.more summary::-webkit-details-marker { display: none; }
+details.more[open] summary { margin-bottom: 14px; }
+details.more > div { display: grid; gap: 14px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: 14px; padding: 13px 18px; font-weight: 600; font-size: 16px; cursor: pointer; text-decoration: none; }
+.btn-primary { background: var(--brand); color: #fff; box-shadow: 0 10px 22px -8px rgba(15,59,42,.5); }
+.btn-ghost { background: var(--surface); border-color: var(--line); color: var(--ink); }
+.btn-danger { background: #fff; border-color: #f0c4c4; color: var(--danger); }
+.btn[disabled] { opacity: .6; }
+.savebar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: rgba(251,243,226,.92); backdrop-filter: blur(10px); border-top: 1px solid var(--line); padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); }
+.savebar .wrap { display: flex; gap: 10px; }
+.savebar .btn-primary { flex: 1; }
+.err { color: var(--danger); font-size: 14.5px; background: #fdeeee; border-radius: 10px; padding: 10px 12px; }
+.files { display: grid; gap: 8px; }
+.file { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fffdf8; font-size: 14.5px; }
+.file span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.icon-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: #fff; display: grid; place-items: center; cursor: pointer; flex: none; }
+
+/* list */
+.list { display: grid; gap: 10px; }
+.it { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 10px; cursor: pointer; text-align: left; width: 100%; }
+.it .th { width: 64px; height: 64px; border-radius: 12px; flex: none; background: linear-gradient(140deg, #18523a, #0f3b2a); display: grid; place-items: center; color: #fff; overflow: hidden; position: relative; }
+.it .th img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.it .tx { flex: 1; min-width: 0; }
+.it .tx b { display: block; font-weight: 600; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.it .tx small { color: var(--muted); font-size: 13px; }
+.pill { display: inline-block; font-size: 11.5px; padding: 1px 8px; border-radius: 999px; background: var(--soft); color: var(--brand); margin-right: 4px; }
+.pill.hid { background: #fff1d6; color: #9a6400; }
+.filter { display: flex; gap: 8px; margin-bottom: 12px; }
+
+/* login + overlay */
+.login { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: linear-gradient(160deg, #0b2e20, var(--navy) 60%, #18523a); color: #fff; }
+.login .box { width: min(380px, 100%); display: grid; gap: 16px; text-align: center; }
+.login .mark { width: 64px; height: 64px; border-radius: 18px; font-size: 30px; margin: 0 auto; }
+.login h1 { font: 700 24px var(--font-d); margin: 0; }
+.login p { margin: 0; opacity: .75; }
+.login input { text-align: center; font-size: 24px; letter-spacing: .3em; background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.25); color: #fff; }
+.login .err { background: rgba(255,90,90,.15); color: #ffd2d2; }
+.veil { position: fixed; inset: 0; z-index: 50; background: rgba(5,15,36,.6); backdrop-filter: blur(4px); display: grid; place-items: center; padding: 24px; }
+.sheet { background: #fff; border-radius: 22px; padding: 24px; width: min(420px, 100%); text-align: center; display: grid; gap: 14px; }
+.sheet .big { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto; display: grid; place-items: center; background: #dff6ee; color: var(--ok); }
+.sheet .big .ico { width: 32px; height: 32px; stroke-width: 2.4; }
+.spin { width: 44px; height: 44px; border-radius: 50%; border: 4px solid var(--soft); border-top-color: var(--brand); margin: 0 auto; animation: sp 1s linear infinite; }
+@keyframes sp { to { transform: rotate(360deg); } }
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+</style>
+</head>
+<body>
+
+<section class="login" id="loginView">
+  <form class="box" id="loginForm">
+    <div class="mark">น</div>
+    <h1>โพสต์ผลงาน</h1>
+    <p>ใส่รหัส 8 หลัก (ดูได้ใน Google Sheet เมนู แฟ้มผลงาน › ดูรหัสสำหรับโพสต์)</p>
+    <input id="keyIn" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" aria-label="รหัสสำหรับโพสต์">
+    <label class="switch" style="color:#fff"><span>จำรหัสในเครื่องนี้</span><input type="checkbox" id="remember" checked></label>
+    <div class="err" id="loginErr" hidden></div>
+    <button class="btn btn-primary" id="loginBtn">เข้าสู่ระบบ</button>
+  </form>
+</section>
+
+<div id="appView" hidden>
+  <header><div class="wrap">
+    <div class="top">
+      <div class="mark">น</div>
+      <div><b>โพสต์ผลงาน</b><small id="who">แฟ้มผลงานครู</small></div>
+      <span class="sp"></span>
+      <a id="siteLink" href="#" target="_blank" hidden><svg class="ico" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>ดูเว็บ</a>
+      <button class="link" id="logout">ออก</button>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="news" aria-selected="true"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></svg>โพสต์ด่วน</button>
+      <button role="tab" data-tab="work" aria-selected="false"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>เพิ่มผลงาน</button>
+      <button role="tab" data-tab="list" aria-selected="false"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>รายการ</button>
+    </div>
+  </div></header>
+  <main class="wrap" id="main"></main>
+</div>
+
+<div id="veil" class="veil" hidden></div>
+<input type="file" id="pickImg" accept="image/*" multiple hidden>
+<input type="file" id="pickPdf" accept="application/pdf" multiple hidden>
+
+<script>
+const RESULTS = [
+  { t: 'เหรียญทอง', tone: 'gold' }, { t: 'เหรียญเงิน', tone: 'silver' }, { t: 'เหรียญทองแดง', tone: 'bronze' },
+  { t: 'ชนะเลิศ', tone: 'gold' }, { t: 'รองชนะเลิศอันดับ 1', tone: 'silver' }, { t: 'รองชนะเลิศอันดับ 2', tone: 'bronze' },
+  { t: 'ชมเชย', tone: '' }, { t: 'เข้าร่วม', tone: '' }
+];
+const SCOPES = ['โรงเรียน', 'เขตพื้นที่', 'จังหวัด', 'ภาค', 'ประเทศ', 'นานาชาติ'];
+const PA = { 1: 'ด้านที่ 1 การจัดการเรียนการสอน', 2: 'ด้านที่ 2 ส่งเสริมและสนับสนุน', 3: 'ด้านที่ 3 พัฒนาตนเองและวิชาชีพ' };
+const LEVELS = ['ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6', 'ม.ต้น', 'ม.ปลาย'];
+
+let KEY = '', DB = { items: [], categories: [], settings: {} }, tab = 'news', draft = null, editingId = null, listType = 'all', listQ = '';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const run = (fn, ...a) => new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...a));
+const img = id => /^https?:/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w400';
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const thaiYear = d => d ? String(+String(d).slice(0, 4) + 543) : '';
+const ICO = {
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>', pdf: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>', plus: '<path d="M5 12h14"/><path d="M12 5v14"/>'
+};
+const ic = n => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICO[n]}</svg>`;
+
+/* ---------- login ---------- */
+(function boot() {
+  let saved = ''; try { saved = localStorage.getItem('pf-key') || ''; } catch (e) {}
+  if (saved) { $('keyIn').value = saved; login(saved, true); }
+})();
+$('loginForm').onsubmit = e => { e.preventDefault(); login($('keyIn').value.trim()); };
+async function login(k, quiet) {
+  $('loginErr').hidden = true; $('loginBtn').disabled = true; $('loginBtn').textContent = 'กำลังตรวจสอบ…';
+  try {
+    await run('adminLogin', k);
+    KEY = k;
+    try { if ($('remember').checked) localStorage.setItem('pf-key', k); } catch (e) {}
+    await reload();
+    $('loginView').hidden = true; $('appView').hidden = false;
+    show('news');
+  } catch (err) {
+    try { localStorage.removeItem('pf-key'); } catch (e) {}
+    if (!quiet) { $('loginErr').textContent = msg(err); $('loginErr').hidden = false; }
+  }
+  $('loginBtn').disabled = false; $('loginBtn').textContent = 'เข้าสู่ระบบ';
+}
+$('logout').onclick = () => { try { localStorage.removeItem('pf-key'); } catch (e) {} location.reload(); };
+const msg = err => (err && err.message ? err.message : String(err)).replace(/^Error:\s*/, '');
+
+async function reload() {
+  DB = await run('adminData', KEY);
+  const s = DB.settings || {};
+  $('who').textContent = s.name || 'แฟ้มผลงานครู';
+  if (s.siteUrl) { $('siteLink').href = s.siteUrl; $('siteLink').hidden = false; }
+}
+
+/* ---------- tabs ---------- */
+document.querySelector('.tabs').onclick = e => { const b = e.target.closest('button'); if (b) show(b.dataset.tab); };
+function show(t, item) {
+  tab = t;
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t || (t === 'edit' && item && b.dataset.tab === item.type)));
+  if (t === 'list') return renderList();
+  const type = t === 'edit' ? item.type : t;
+  editingId = item ? item.id : null;
+  draft = item ? JSON.parse(JSON.stringify(item)) : blank(type);
+  renderForm();
+  window.scrollTo(0, 0);
+}
+function blank(type) {
+  const firstCat = (DB.categories.find(c => c.type === type) || {}).key || '';
+  return { id: '', type, cat: firstCat, pa: type === 'news' ? 2 : 1, title: '', sub: '', desc: '', date: today(), year: thaiYear(today()), level: '', status: 'live',
+    result: '', scope: '', event: '', students: '', showStudents: false, tags: [], link: '', images: [], files: [], featured: false, hidden: false };
+}
+
+/* ---------- form ---------- */
+function chips(name, opts, val, extraCls) {
+  return `<div class="chips ${extraCls || ''}" data-chips="${name}">${opts.map(o => { const v = typeof o === 'object' ? o.v : o, t = typeof o === 'object' ? o.t : o;
+    return `<button type="button" data-v="${esc(v)}" ${o.tone ? `data-tone="${o.tone}"` : ''} aria-pressed="${String(val) === String(v)}">${esc(t)}</button>`; }).join('')}</div>`;
+}
+function renderForm() {
+  const d = draft, news = d.type === 'news';
+  const cats = DB.categories.filter(c => c.type === d.type).map(c => ({ v: c.key, t: c.name }));
+  $('main').innerHTML = `
+  <form id="f" novalidate>
+    <div class="card">
+      <div><h2>${editingId ? 'แก้ไข' : news ? 'โพสต์ความเคลื่อนไหว' : 'เพิ่มผลงานใหม่'}</h2>
+      <p class="muted">${news ? 'ประกวด รางวัล อบรม กิจกรรม — ใส่รูปและกรอกไม่กี่ช่องก็โพสต์ได้' : 'เกม สื่อ ระบบงาน เอกสาร หรือผลงานที่ใช้ต่อเนื่อง'}</p></div>
+      <div><label class="l">รูปภาพ <small>(รูปแรกเป็นภาพปก)</small></label><div class="photos" id="photos"></div></div>
+      <div><label class="l">${news ? 'ประเภท' : 'หมวดผลงาน'}</label>${chips('cat', cats, d.cat)}</div>
+      <div><label class="l" for="fTitle">${news ? 'หัวข้อโพสต์' : 'ชื่อผลงาน'} *</label><input id="fTitle" value="${esc(d.title)}" placeholder="${news ? 'เช่น นักเรียน ม.2 คว้าเหรียญทองคณิตคิดเร็ว' : 'เช่น บอร์ดเกมเรขาคณิตพาเพลิน'}"></div>
+      ${news ? `
+      <div><label class="l" for="fEvent">ชื่องาน/รายการ</label><input id="fEvent" value="${esc(d.event)}" placeholder="เช่น งานศิลปหัตถกรรมนักเรียน ครั้งที่ 72"></div>
+      <div class="row2"><div><label class="l" for="fDate">วันที่</label><input id="fDate" type="date" value="${esc(d.date)}"></div>
+        <div><label class="l" for="fScope">ระดับ</label><select id="fScope"><option value="">ไม่ระบุ</option>${SCOPES.map(s => `<option ${d.scope === s ? 'selected' : ''}>${s}</option>`).join('')}</select></div></div>
+      <div><label class="l">ผลที่ได้</label>${chips('result', RESULTS.map(r => ({ v: r.t, t: r.t, tone: r.tone })), d.result, 'gold')}</div>
+      <div><label class="l" for="fStudents">นักเรียน <small>(ไม่บังคับ)</small></label><input id="fStudents" value="${esc(d.students)}" placeholder="เช่น ด.ญ.มายด์, ด.ช.ต้น">
+        <label class="switch" style="margin-top:8px"><span>แสดงชื่อนักเรียนบนเว็บ<small>ปิดไว้ = เก็บในชีตเท่านั้น ไม่โชว์สาธารณะ</small></span><input type="checkbox" id="fShowStu" ${d.showStudents ? 'checked' : ''}></label></div>
+      ` : `
+      <div><label class="l" for="fSub">คำอธิบายสั้น</label><input id="fSub" value="${esc(d.sub)}" placeholder="เช่น บอร์ดเกมตรีโกณมิติ"></div>
+      `}
+      <div><label class="l" for="fDesc">รายละเอียด</label><textarea id="fDesc" placeholder="${news ? 'เล่าสั้น ๆ ว่าเกิดอะไรขึ้น ได้ผลอย่างไร' : 'ผลงานนี้คืออะไร ใช้กับใคร ได้ผลอย่างไร'}">${esc(d.desc)}</textarea></div>
+      <details class="more" ${editingId || !news ? 'open' : ''}><summary>${ic('plus')}ข้อมูลเพิ่มเติม</summary><div>
+        <div><label class="l">กรอบ ว PA</label>${chips('pa', [1, 2, 3].map(k => ({ v: k, t: PA[k] })), d.pa)}</div>
+        ${news ? `<div><label class="l" for="fSub">คำโปรย <small>(แสดงใต้หัวข้อ)</small></label><input id="fSub" value="${esc(d.sub)}"></div>` : `
+        <div class="row2"><div><label class="l" for="fLevel">ระดับชั้น</label><input id="fLevel" list="lv" value="${esc(d.level)}"><datalist id="lv">${LEVELS.map(l => `<option value="${l}">`).join('')}</datalist></div>
+          <div><label class="l" for="fYear">ปีการศึกษา</label><input id="fYear" inputmode="numeric" maxlength="4" value="${esc(d.year)}"></div></div>
+        <div><label class="l">สถานะ</label>${chips('status', [{ v: 'live', t: 'ใช้งานจริง' }, { v: 'wip', t: 'กำลังพัฒนา' }], d.status)}</div>`}
+        <div><label class="l" for="fLink">ลิงก์ <small>(เว็บ เกม คลิป หรือโพสต์ Facebook)</small></label><input id="fLink" type="url" value="${esc(d.link)}" placeholder="https://"></div>
+        <div><label class="l" for="fTags">คำสำคัญ <small>(คั่นด้วยจุลภาค)</small></label><input id="fTags" value="${esc((d.tags || []).join(', '))}"></div>
+        <div><label class="l">ไฟล์ PDF <small>(แผนการสอน เกียรติบัตร ฯลฯ)</small></label><div class="files" id="pdfs"></div>
+          <button type="button" class="btn btn-ghost" id="addPdf" style="margin-top:8px">${ic('pdf')}แนบไฟล์ PDF</button></div>
+        <label class="switch"><span>ปักหมุดเป็นผลงานเด่น<small>แสดงในส่วนบนของเว็บ สูงสุด 3 ชิ้น</small></span><input type="checkbox" id="fFeat" ${d.featured ? 'checked' : ''}></label>
+        <label class="switch"><span>ซ่อนไว้ก่อน<small>บันทึกเป็นฉบับร่าง ยังไม่แสดงบนเว็บ</small></span><input type="checkbox" id="fHidden" ${d.hidden ? 'checked' : ''}></label>
+      </div></details>
+      <div class="err" id="fErr" hidden></div>
+    </div>
+    ${editingId ? `<button type="button" class="btn btn-danger" id="delBtn" style="width:100%">${ic('trash')}ลบรายการนี้</button>` : ''}
+  </form>
+  <div class="savebar"><div class="wrap">
+    ${editingId ? `<button class="btn btn-ghost" id="cancelBtn">ยกเลิก</button>` : ''}
+    <button class="btn btn-primary" id="saveBtn">${ic('check')}${editingId ? 'บันทึกการแก้ไข' : news ? 'โพสต์เลย' : 'บันทึกผลงาน'}</button>
+  </div></div>`;
+  $('f').addEventListener('click', e => {
+    const b = e.target.closest('[data-chips] button'); if (!b) return;
+    const grp = b.parentElement, name = grp.dataset.chips;
+    const on = b.getAttribute('aria-pressed') !== 'true' || name === 'cat' || name === 'pa' || name === 'status';
+    grp.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false'));
+    if (on) b.setAttribute('aria-pressed', 'true');
+    draft[name] = on ? (name === 'pa' ? +b.dataset.v : b.dataset.v) : '';
+  });
+  $('f').onsubmit = e => e.preventDefault();
+  $('addPdf').onclick = () => $('pickPdf').click();
+  $('saveBtn').onclick = save;
+  if ($('cancelBtn')) $('cancelBtn').onclick = () => show('list');
+  if ($('delBtn')) $('delBtn').onclick = confirmDelete;
+  drawPhotos(); drawPdfs();
+}
+
+/* ---------- photos & pdf ---------- */
+const pending = new Set();
+function drawPhotos() {
+  const box = $('photos'); if (!box) return;
+  box.innerHTML = draft.images.map((id, i) => `<div class="ph"><img src="${esc(img(id))}" alt="">${i === 0 ? '<span class="cov">ภาพปก</span>' : ''}<button type="button" class="x" data-rm="${i}" aria-label="ลบรูป">${ic('x')}</button></div>`).join('') +
+    [...pending].filter(p => p.kind === 'img').map(() => `<div class="ph">กำลังอัปโหลด<span class="bar"><i></i></span></div>`).join('') +
+    `<button type="button" class="ph add" id="addImg">${ic('camera')}เพิ่มรูป</button>`;
+  $('addImg').onclick = () => $('pickImg').click();
+  box.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { draft.images.splice(+b.dataset.rm, 1); drawPhotos(); });
+}
+function drawPdfs() {
+  const box = $('pdfs'); if (!box) return;
+  box.innerHTML = draft.files.map((f, i) => `<div class="file">${ic('pdf')}<span>${esc(f.name)}</span><button type="button" class="icon-btn" data-rmf="${i}" aria-label="ลบไฟล์">${ic('x')}</button></div>`).join('') +
+    [...pending].filter(p => p.kind === 'pdf').map(p => `<div class="file">${ic('pdf')}<span>${esc(p.name)} · กำลังอัปโหลด…</span></div>`).join('');
+  box.querySelectorAll('[data-rmf]').forEach(b => b.onclick = () => { draft.files.splice(+b.dataset.rmf, 1); drawPdfs(); });
+}
+$('pickImg').onchange = async () => { const fs = [...$('pickImg').files]; $('pickImg').value = ''; for (const f of fs) upImage(f); };
+$('pickPdf').onchange = async () => { const fs = [...$('pickPdf').files]; $('pickPdf').value = ''; for (const f of fs) upPdf(f); };
+
+function compress(file, max) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const r = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+      const c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * r); c.height = Math.round(im.naturalHeight * r);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      res(c.toDataURL('image/jpeg', 0.85).split(',')[1]);
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('เปิดรูปนี้ไม่ได้ ลองเลือกรูป JPG หรือ PNG')); };
+    im.src = url;
+  });
+}
+async function upImage(f) {
+  const p = { kind: 'img', name: f.name }, d = draft; pending.add(p); drawPhotos();
+  try {
+    const data = await compress(f, 1600);
+    const r = await run('adminUpload', KEY, { name: (f.name || 'photo').replace(/\.\w+$/, '') + '.jpg', mime: 'image/jpeg', data });
+    d.images.push(r.id);
+  } catch (err) { setErr(msg(err)); }
+  pending.delete(p); if (d === draft) drawPhotos();
+}
+async function upPdf(f) {
+  if (f.size > 20 * 1024 * 1024) return setErr('ไฟล์ ' + f.name + ' ใหญ่เกิน 20 MB');
+  const p = { kind: 'pdf', name: f.name }, d = draft; pending.add(p); drawPdfs();
+  try {
+    const data = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(f); });
+    const r = await run('adminUpload', KEY, { name: f.name, mime: 'application/pdf', data });
+    d.files.push({ id: r.id, name: f.name });
+  } catch (err) { setErr(msg(err)); }
+  pending.delete(p); if (d === draft) drawPdfs();
+}
+function setErr(t) { const e = $('fErr'); if (!e) return; e.textContent = t || ''; e.hidden = !t; if (t) e.scrollIntoView({ block: 'center' }); }
+
+/* ---------- save / delete ---------- */
+async function save() {
+  setErr('');
+  const v = id => $(id) ? $(id).value.trim() : undefined;
+  const d = draft;
+  d.title = v('fTitle'); if (!d.title) { setErr('กรุณาใส่' + (d.type === 'news' ? 'หัวข้อโพสต์' : 'ชื่อผลงาน')); $('fTitle').focus(); return; }
+  if (pending.size) { setErr('รอให้อัปโหลดรูป/ไฟล์เสร็จก่อน แล้วกดอีกครั้ง'); return; }
+  ['sub:fSub', 'desc:fDesc', 'event:fEvent', 'date:fDate', 'scope:fScope', 'students:fStudents', 'level:fLevel', 'year:fYear', 'link:fLink'].forEach(p => {
+    const [k, id] = p.split(':'); const x = v(id); if (x !== undefined) d[k] = x;
+  });
+  if (d.link && !/^https?:\/\//i.test(d.link)) { setErr('ลิงก์ต้องขึ้นต้นด้วย https://'); return; }
+  d.tags = (v('fTags') || '').split(/[,，]/).map(s => s.trim()).filter(Boolean);
+  d.featured = $('fFeat').checked; d.hidden = $('fHidden').checked; if ($('fShowStu')) d.showStudents = $('fShowStu').checked;
+  if (d.type === 'news' && d.date) d.year = thaiYear(d.date);
+  if (d.featured && DB.items.filter(x => x.featured && x.id !== d.id && !x.hidden).length >= 3) { setErr('ผลงานเด่นมีครบ 3 ชิ้นแล้ว ยกเลิกการปักหมุดชิ้นอื่นในแท็บรายการก่อน'); return; }
+  veil(`<div class="spin"></div><b>กำลังบันทึก…</b>`);
+  try {
+    const saved = await run('adminSave', KEY, d);
+    await reload();
+    const site = (DB.settings || {}).siteUrl;
+    veil(`<div class="big">${ic('check')}</div><h2>${d.hidden ? 'บันทึกฉบับร่างแล้ว' : 'โพสต์แล้ว'}</h2>
+      <p class="muted">${d.hidden ? 'ยังไม่แสดงบนเว็บจนกว่าจะปิด "ซ่อนไว้ก่อน"' : 'หน้าเว็บจะแสดงรายการนี้ภายในไม่กี่วินาที'}</p>
+      ${site && !d.hidden ? `<a class="btn btn-primary" href="${esc(site)}#item-${esc(saved.id)}" target="_blank">ดูบนเว็บ</a>` : ''}
+      <button class="btn btn-ghost" id="again">${d.type === 'news' ? 'โพสต์อีกเรื่อง' : 'เพิ่มผลงานอีก'}</button>
+      <button class="btn btn-ghost" id="toList">ไปที่รายการทั้งหมด</button>`);
+    $('again').onclick = () => { veil(); show(d.type); };
+    $('toList').onclick = () => { veil(); show('list'); };
+  } catch (err) { veil(); setErr('บันทึกไม่สำเร็จ: ' + msg(err)); }
+}
+function confirmDelete() {
+  veil(`<h2>ลบ “${esc(draft.title)}”?</h2><p class="muted">รูปและไฟล์แนบจะถูกย้ายไปถังขยะของ Google Drive (กู้คืนได้ภายใน 30 วัน)</p>
+    <button class="btn btn-danger" id="yes">${ic('trash')}ลบเลย</button><button class="btn btn-ghost" id="no">ยกเลิก</button>`);
+  $('no').onclick = () => veil();
+  $('yes').onclick = async () => {
+    veil(`<div class="spin"></div><b>กำลังลบ…</b>`);
+    try { await run('adminDelete', KEY, editingId); await reload(); veil(); show('list'); }
+    catch (err) { veil(); setErr('ลบไม่สำเร็จ: ' + msg(err)); }
+  };
+}
+function veil(html) { const v = $('veil'); if (!html) { v.hidden = true; v.innerHTML = ''; return; } v.innerHTML = `<div class="sheet">${html}</div>`; v.hidden = false; }
+
+/* ---------- list ---------- */
+function renderList() {
+  const catOf = k => DB.categories.find(c => c.key === k) || { name: k, color: '#2563eb' };
+  const q = listQ.toLowerCase();
+  const items = DB.items.filter(i => (listType === 'all' || i.type === listType) && (!q || (i.title + ' ' + i.event + ' ' + i.sub).toLowerCase().includes(q)))
+    .sort((a, b) => String(b.date || b.created).localeCompare(String(a.date || a.created)));
+  $('main').innerHTML = `
+    <div class="filter"><input type="search" id="lq" placeholder="ค้นหา" value="${esc(listQ)}"></div>
+    ${chips('lt', [{ v: 'all', t: 'ทั้งหมด ' + DB.items.length }, { v: 'news', t: 'ความเคลื่อนไหว' }, { v: 'work', t: 'ผลงาน' }], listType)}
+    <div class="list" style="margin-top:14px">${items.length ? items.map(i => { const c = catOf(i.cat);
+      return `<button class="it" data-id="${esc(i.id)}"><span class="th" style="--c:${esc(c.color)}">${i.images[0] ? `<img src="${esc(img(i.images[0]))}" alt="" loading="lazy">` : esc(c.name.slice(0, 1))}</span>
+        <span class="tx"><b>${esc(i.title)}</b><span class="pill">${esc(c.name)}</span>${i.featured ? '<span class="pill">ผลงานเด่น</span>' : ''}${i.hidden ? '<span class="pill hid">ซ่อน</span>' : ''}<br><small>${esc([i.result, i.scope, i.date || i.year].filter(Boolean).join(' · '))}</small></span></button>`; }).join('')
+      : '<div class="empty">ยังไม่มีรายการ</div>'}</div>`;
+  $('lq').oninput = e => { listQ = e.target.value; const pos = e.target.selectionStart; renderList(); $('lq').focus(); $('lq').setSelectionRange(pos, pos); };
+  document.querySelector('[data-chips="lt"]').onclick = e => { const b = e.target.closest('button'); if (b) { listType = b.dataset.v; renderList(); } };
+  document.querySelectorAll('.it').forEach(b => b.onclick = () => { const it = DB.items.find(x => x.id === b.dataset.id); if (it) show('edit', it); });
+}
+</script>
+</body>
+</html>
