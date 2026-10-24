@@ -104,7 +104,7 @@ const SEED_CATEGORIES = [
 const SEED_SETTINGS = [
  {
   "key": "name",
-  "value": "ครูนัฏฐกิตติ์",
+  "value": "ครูนัฎฐกิตติ์",
   "note": "ชื่อที่แสดงบนเว็บ"
  },
  {
