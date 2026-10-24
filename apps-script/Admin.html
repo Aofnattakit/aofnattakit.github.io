@@ -109,6 +109,18 @@ details.more > div { display: grid; gap: 14px; }
 .sheet .big .ico { width: 32px; height: 32px; stroke-width: 2.4; }
 .spin { width: 44px; height: 44px; border-radius: 50%; border: 4px solid var(--soft); border-top-color: var(--brand); margin: 0 auto; animation: sp 1s linear infinite; }
 @keyframes sp { to { transform: rotate(360deg); } }
+.ocr { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; border: 0; border-radius: 16px; padding: 14px; cursor: pointer; color: #3d2c00; background: linear-gradient(135deg, #ffe39a, #f2b21b); box-shadow: 0 10px 22px -10px rgba(176,122,0,.7); }
+.ocr b { display: block; font-size: 16px; }
+.ocr small { display: block; font-size: 13px; opacity: .85; line-height: 1.45; }
+.ocr-ico { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,.55); display: grid; place-items: center; flex: none; }
+.ocr-ico .ico { width: 24px; height: 24px; }
+.ocr.pulse { animation: ocrp 1.8s ease-in-out infinite; }
+@keyframes ocrp { 50% { box-shadow: 0 0 0 7px rgba(242,178,27,.3), 0 10px 22px -10px rgba(176,122,0,.7); } }
+.ocr-done { display: flex; gap: 10px; margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #e6f6ee; color: #145c3b; font-size: 14.5px; }
+.ocr-done .ico { color: var(--ok); margin-top: 2px; }
+.ai-filled { background: #fff6d6 !important; border-color: #e7b934 !important; }
+.chips.ai-filled { padding: 6px; border-radius: 14px; border: 1.5px solid #e7b934; }
+@media (prefers-reduced-motion: reduce) { .ocr.pulse { animation: none; } }
 .empty { text-align: center; color: var(--muted); padding: 30px 10px; }
 </style>
 </head>
@@ -167,7 +179,7 @@ const today = () => { const d = new Date(); return d.getFullYear() + '-' + Strin
 const thaiYear = d => d ? String(+String(d).slice(0, 4) + 543) : '';
 const ICO = {
   x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
-  check: '<path d="M20 6 9 17l-5-5"/>', pdf: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>', spark: '<path d="M12 3l1.9 5.6L19.5 10.5 13.9 12.4 12 18l-1.9-5.6L4.5 10.5l5.6-1.9z"/><path d="M19 3v4M17 5h4"/>', pdf: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
   trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>', plus: '<path d="M5 12h14"/><path d="M12 5v14"/>'
 };
 const ic = n => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICO[n]}</svg>`;
@@ -212,6 +224,7 @@ function show(t, item) {
   const type = t === 'edit' ? item.type : t;
   editingId = item ? item.id : null;
   draft = item ? JSON.parse(JSON.stringify(item)) : blank(type);
+  ocrFilled = null;
   renderForm();
   window.scrollTo(0, 0);
 }
@@ -235,6 +248,7 @@ function renderForm() {
       <div><h2>${editingId ? 'แก้ไข' : news ? 'โพสต์ความเคลื่อนไหว' : 'เพิ่มผลงานใหม่'}</h2>
       <p class="muted">${news ? 'ประกวด รางวัล อบรม กิจกรรม — ใส่รูปและกรอกไม่กี่ช่องก็โพสต์ได้' : 'เกม สื่อ ระบบงาน เอกสาร หรือผลงานที่ใช้ต่อเนื่อง'}</p></div>
       <div><label class="l">รูปภาพ <small>(รูปแรกเป็นภาพปก)</small></label><div class="photos" id="photos"></div></div>
+      <div id="ocrBox"></div>
       <div><label class="l">${news ? 'ประเภท' : 'หมวดผลงาน'}</label>${chips('cat', cats, d.cat)}</div>
       <div><label class="l" for="fTitle">${news ? 'หัวข้อโพสต์' : 'ชื่อผลงาน'} *</label><input id="fTitle" value="${esc(d.title)}" placeholder="${news ? 'เช่น นักเรียน ม.2 คว้าเหรียญทองคณิตคิดเร็ว' : 'เช่น บอร์ดเกมเรขาคณิตพาเพลิน'}"></div>
       ${news ? `
@@ -294,12 +308,14 @@ function drawPhotos() {
     `<button type="button" class="ph add" id="addImg">${ic('camera')}เพิ่มรูป</button>`;
   $('addImg').onclick = () => $('pickImg').click();
   box.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { draft.images.splice(+b.dataset.rm, 1); drawPhotos(); });
+  drawOcr();
 }
 function drawPdfs() {
   const box = $('pdfs'); if (!box) return;
   box.innerHTML = draft.files.map((f, i) => `<div class="file">${ic('pdf')}<span>${esc(f.name)}</span><button type="button" class="icon-btn" data-rmf="${i}" aria-label="ลบไฟล์">${ic('x')}</button></div>`).join('') +
     [...pending].filter(p => p.kind === 'pdf').map(p => `<div class="file">${ic('pdf')}<span>${esc(p.name)} · กำลังอัปโหลด…</span></div>`).join('');
   box.querySelectorAll('[data-rmf]').forEach(b => b.onclick = () => { draft.files.splice(+b.dataset.rmf, 1); drawPdfs(); });
+  drawOcr();
 }
 $('pickImg').onchange = async () => { const fs = [...$('pickImg').files]; $('pickImg').value = ''; for (const f of fs) upImage(f); };
 $('pickPdf').onchange = async () => { const fs = [...$('pickPdf').files]; $('pickPdf').value = ''; for (const f of fs) upPdf(f); };
@@ -338,19 +354,64 @@ async function upPdf(f) {
 }
 function setErr(t) { const e = $('fErr'); if (!e) return; e.textContent = t || ''; e.hidden = !t; if (t) e.scrollIntoView({ block: 'center' }); }
 
+/* ---------- อ่านข้อมูลจากเกียรติบัตร ---------- */
+function syncDraft() {
+  const v = id => $(id) ? $(id).value.trim() : undefined, d = draft;
+  ['title:fTitle', 'sub:fSub', 'desc:fDesc', 'event:fEvent', 'date:fDate', 'scope:fScope', 'students:fStudents', 'level:fLevel', 'year:fYear', 'link:fLink'].forEach(p => {
+    const [k, id] = p.split(':'); const x = v(id); if (x !== undefined) d[k] = x;
+  });
+  if ($('fTags')) d.tags = $('fTags').value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
+  if ($('fFeat')) d.featured = $('fFeat').checked;
+  if ($('fHidden')) d.hidden = $('fHidden').checked;
+  if ($('fShowStu')) d.showStudents = $('fShowStu').checked;
+}
+function ocrSource() {
+  if (draft.images.length) return { id: draft.images[0], label: 'ภาพปก' };
+  if (draft.files.length) return { id: draft.files[0].id, label: draft.files[0].name };
+  return null;
+}
+let ocrFilled = null;
+function drawOcr() {
+  const box = $('ocrBox'); if (!box) return;
+  const src = ocrSource();
+  if (!src || draft.type !== 'news') { box.innerHTML = ''; return; }
+  const fresh = !draft.title && !ocrFilled;
+  box.innerHTML = `<button type="button" class="ocr ${fresh ? 'pulse' : ''}" id="ocrBtn">
+    <span class="ocr-ico">${ic('spark')}</span>
+    <span><b>อ่านข้อมูลจากเกียรติบัตร</b><small>ระบบจะอ่าน${esc(src.label)} แล้วกรอกหัวข้อ ผลรางวัล ระดับ ชื่องาน วันที่ ให้อัตโนมัติ</small></span></button>
+    ${ocrFilled ? `<div class="ocr-done">${ic('check')}<span>กรอกให้แล้ว ${ocrFilled.count} ช่อง (ช่องสีเหลือง) <b>ตรวจทานก่อนโพสต์</b>${ocrFilled.engine === 'ocr' ? ' · ใช้ตัวอ่านตัวอักษรพื้นฐาน อาจต้องแก้บางช่อง' : ''}${ocrFilled.note ? '<br><small>' + esc(ocrFilled.note) + '</small>' : ''}</span></div>` : ''}`;
+  $('ocrBtn').onclick = readDoc;
+}
+async function readDoc() {
+  const src = ocrSource(); if (!src) return;
+  setErr(''); syncDraft();
+  veil(`<div class="spin"></div><b>กำลังอ่านเกียรติบัตร…</b><p class="muted">ใช้เวลาประมาณ 5–15 วินาที</p>`);
+  try {
+    const r = await run('adminReadDoc', KEY, src.id);
+    const f = r.fields || {}, map = { title: 'fTitle', event: 'fEvent', date: 'fDate', scope: 'fScope', students: 'fStudents', desc: 'fDesc', result: 'result', cat: 'cat', pa: 'pa' };
+    const filled = [];
+    Object.keys(map).forEach(k => { if (f[k] !== '' && f[k] != null) { draft[k] = f[k]; filled.push(map[k]); } });
+    if (draft.date) draft.year = thaiYear(draft.date);
+    ocrFilled = { count: filled.length, engine: r.engine, note: r.note || '' };
+    veil();
+    renderForm();
+    filled.forEach(id => {
+      const el = $(id) || document.querySelector(`[data-chips="${id}"]`);
+      if (el) el.classList.add('ai-filled');
+    });
+    if (!filled.length) setErr('อ่านเอกสารได้ แต่ไม่พบข้อมูลที่ตรงกับช่องกรอก ลองถ่ายให้เห็นตัวหนังสือชัดขึ้น หรือกรอกเอง');
+    else $('ocrBox').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  } catch (err) { veil(); setErr('อ่านเกียรติบัตรไม่สำเร็จ: ' + msg(err)); }
+}
+
 /* ---------- save / delete ---------- */
 async function save() {
   setErr('');
-  const v = id => $(id) ? $(id).value.trim() : undefined;
   const d = draft;
-  d.title = v('fTitle'); if (!d.title) { setErr('กรุณาใส่' + (d.type === 'news' ? 'หัวข้อโพสต์' : 'ชื่อผลงาน')); $('fTitle').focus(); return; }
+  syncDraft();
+  if (!d.title) { setErr('กรุณาใส่' + (d.type === 'news' ? 'หัวข้อโพสต์' : 'ชื่อผลงาน')); $('fTitle').focus(); return; }
   if (pending.size) { setErr('รอให้อัปโหลดรูป/ไฟล์เสร็จก่อน แล้วกดอีกครั้ง'); return; }
-  ['sub:fSub', 'desc:fDesc', 'event:fEvent', 'date:fDate', 'scope:fScope', 'students:fStudents', 'level:fLevel', 'year:fYear', 'link:fLink'].forEach(p => {
-    const [k, id] = p.split(':'); const x = v(id); if (x !== undefined) d[k] = x;
-  });
   if (d.link && !/^https?:\/\//i.test(d.link)) { setErr('ลิงก์ต้องขึ้นต้นด้วย https://'); return; }
-  d.tags = (v('fTags') || '').split(/[,，]/).map(s => s.trim()).filter(Boolean);
-  d.featured = $('fFeat').checked; d.hidden = $('fHidden').checked; if ($('fShowStu')) d.showStudents = $('fShowStu').checked;
   if (d.type === 'news' && d.date) d.year = thaiYear(d.date);
   if (d.featured && DB.items.filter(x => x.featured && x.id !== d.id && !x.hidden).length >= 3) { setErr('ผลงานเด่นมีครบ 3 ชิ้นแล้ว ยกเลิกการปักหมุดชิ้นอื่นในแท็บรายการก่อน'); return; }
   veil(`<div class="spin"></div><b>กำลังบันทึก…</b>`);

@@ -41,6 +41,9 @@
 4. ถ้าแก้ `apps-script/` ต้องบอกครูชัด ๆ ว่าไฟล์ไหนต้องคัดลอกไปวาง และกด Deploy › จัดการ › เวอร์ชันใหม่ (ห้ามสร้าง deployment ใหม่ เพราะ URL จะเปลี่ยน)
 5. ถ้าเพิ่ม key ใน settings ให้อัปเดต `apps-script/Seed.gs`, `data/sample.json` และตาราง settings ใน README ด้วย
 
+## ฟีเจอร์ที่มีแล้ว
+- v1.1: ปุ่มอ่านเกียรติบัตรในหน้าโพสต์ (`adminReadDoc` ใน Code.gs: Gemini ถ้ามี `GEMINI_KEY` ใน Script Properties, ไม่งั้น OCR ของ Drive + `parseCertText_`) ค่า result/scope ต้องอยู่ในรายการ `DOC_RESULTS`/`DOC_SCOPES` ให้ตรงกับชิปใน Admin.html
+
 ## ไอเดียที่ครูอยากทำต่อ
 - AI ช่วยเรียบเรียงข้อความโพสต์ในหน้าโพสต์
 - หน้าสรุปหลักฐาน ว PA / DPA รายปีการศึกษา
